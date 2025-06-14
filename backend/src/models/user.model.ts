@@ -33,7 +33,7 @@ userSchema.pre("save", async function (next) {
 
   this.password = await hashValue(this.password);
   return next();
-});
+}); 
 
 userSchema.methods.comparePassword = async function (val: string) {
   return compareValue(val, this.password);

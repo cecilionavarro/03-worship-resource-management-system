@@ -5,6 +5,9 @@
 
 import z from "zod";
 import { Request, Response } from "express";
+import { createAccount } from "../services/auth.service";
+import { CREATED } from "../constants/http";
+import { setAuthCookies } from "../utils/cookies";
 
 const registerSchema = z
     .object({
@@ -24,4 +27,12 @@ export const registerHandler = async (req: Request, res: Response) => {
         ...req.body,
         userAgent: req.headers["user-agent"], // tells what browser/device made the request is optional
     });
+
+    // call service
+    const { user, accessToken, refreshToken } = await createAccount(request);
+
+    // return response
+    setAuthCookies({ res, accessToken, refreshToken })
+        .status(CREATED)
+        .json(user);
 };

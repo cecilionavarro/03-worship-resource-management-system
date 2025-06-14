@@ -1,4 +1,5 @@
 import VerificationCodeType from "../constants/verificationCodeTypes";
+import SessionModel from "../models/session.model";
 import UserModel from "../models/user.model";
 import VerificationCodeModel from "../models/verificationCode.model";
 import { oneYearFromNow } from "../utils/date";
@@ -34,6 +35,10 @@ export const createAccount = async (data: CreateAccountParams) => {
     // send verification email
 
     // create session (unit of time user is logged in to)
+    const session = SessionModel.create({
+        userId: user._id,
+        userAgent: data.userAgent,
+    })
 
     // sign access token & refresh token
     // return user & token

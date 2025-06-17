@@ -6,18 +6,19 @@ import { APP_ORIGIN, NODE_ENV, PORT } from "./constants/env";
 import errorHandler from "./middleware/errorHandler";
 import { OK } from "./constants/http";
 import authRoutes from "./routes/auth.route";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use(express.json()); //Parse JSON request bodies front end or postman
 app.use(express.urlencoded({ extended: true })); // From data allows nested objects and arrays
-
 app.use(
     cors({
         origin: APP_ORIGIN,
         credentials: true, // required to send cookies or sessions
     })
 );
+app.use(cookieParser());
 
 app.get("/", (req, res, next) => { 
     res.status(OK).json({

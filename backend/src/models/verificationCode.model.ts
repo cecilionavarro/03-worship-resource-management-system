@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import VerificationCodeType from "../constants/verificationCodeTypes";
-// mongoose.Types.ObjectId is the special identifier by MongoDB
 
+// mongoose.Types.ObjectId is the special identifier by MongoDB
 export interface VerificationCodeDocument extends mongoose.Document {
     userId: mongoose.Types.ObjectId;
     type: VerificationCodeType;

@@ -4,10 +4,27 @@
 // 3. return response
 
 import { Request, Response } from "express";
-import { createAccount, loginUser } from "../services/auth.service";
-import { CREATED, OK } from "../constants/http";
-import { setAuthCookies } from "../utils/cookies";
-import { loginSchema, registerSchema } from "./auth.schemas";
+import {
+    createAccount,
+    loginUser,
+    refreshUserAccessToken,
+    verifyEmail,
+} from "../services/auth.service";
+import { CREATED, OK, UNAUTHORIZED } from "../constants/http";
+import {
+    clearAuthCookies,
+    getAccessTokenCookieOptions,
+    getRefreshTokenCookieOptions,
+    setAuthCookies,
+} from "../utils/cookies";
+import {
+    loginSchema,
+    registerSchema,
+    verificationCodeSchema,
+} from "./auth.schemas";
+import { verifyToken } from "../utils/jwt";
+import SessionModel from "../models/session.model";
+import appAssert from "../utils/appAssert";
 
 export const registerHandler = async (req: Request, res: Response) => {
     // validate request
@@ -40,4 +57,52 @@ export const loginHandler = async (req: Request, res: Response) => {
     setAuthCookies({ res, accessToken, refreshToken })
         .status(OK)
         .json({ message: "Login successful" });
+};
+
+export const logoutHandler = async (req: Request, res: Response) => {
+    const accessToken = req.cookies.accessToken as string | undefined;
+    const { payload } = verifyToken(accessToken || "");
+
+    console.log(payload);
+
+    if (payload) {
+        await SessionModel.findByIdAndDelete(payload.sessionId);
+    }
+    clearAuthCookies(res).status(OK).json({
+        message: "Logout successful",
+    });
+};
+
+export const refreshHandler = async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken as string | undefined;
+    appAssert(refreshToken, UNAUTHORIZED, "Missing refresh token");
+
+    // accessToken always new, newRefreshToken sometimes new
+    const { accessToken, newRefreshToken } =
+        await refreshUserAccessToken(refreshToken);
+
+    if (newRefreshToken) {
+        res.cookie(
+            "refreshToken",
+            newRefreshToken,
+            getRefreshTokenCookieOptions()
+        );
+    }
+
+    res.status(OK)
+        .cookie("accessToken", accessToken, getAccessTokenCookieOptions())
+        .json({
+            message: "Access token refreshed",
+        });
+};
+
+export const verifyEmailHandler = async (req: Request, res: Response) => {
+    // req.params.code means :code section of the URL   
+    const verificationCode = verificationCodeSchema.parse(req.params.code);
+
+    await verifyEmail(verificationCode);
+
+    res.status(OK).json({
+        message: "Email was succesfully verified",
+    });
 };

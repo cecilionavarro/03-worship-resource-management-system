@@ -1,4 +1,4 @@
-import jwt, { SignOptions } from "jsonwebtoken";
+import jwt, { SignOptions, VerifyOptions } from "jsonwebtoken";
 import { SessionDocument } from "../models/session.model";
 import { UserDocument } from "../models/user.model";
 import { JWT_REFRESH_SECRET, JWT_SECRET } from "../constants/env";
@@ -8,8 +8,8 @@ import { JWT_REFRESH_SECRET, JWT_SECRET } from "../constants/env";
 // secret has to have its type because its defined somewhere else
 // first 2 exports are for the payload and the rest are for the options
 
-
-// define structure of data in payload
+// define structure of data in
+// get type of _id from sessionDocument interface
 export type RefreshTokenPayload = {
     sessionId: SessionDocument["_id"];
 };
@@ -30,6 +30,7 @@ const defaults: SignOptions = {
     audience: ["user"],
 };
 
+//SignOptions already has secret so no need to declare in types
 const accessTokenSignOptions: SignOptionsAndSecret = {
     expiresIn: "15m",
     secret: JWT_SECRET,
@@ -48,4 +49,38 @@ export const signToken = (
     // destructuring to extract secret from options / accessTokenSignOptions
     const { secret, ...signOpts } = options || accessTokenSignOptions;
     return jwt.sign(payload, secret, { ...defaults, ...signOpts });
+};
+
+// can accept and return any kind of object as a token's payload
+// Defaults to AccessTokenPayload
+export const verifyToken = <TPayload extends object = AccessTokenPayload>(
+    token: string,
+    //VerifyOptions just gives the fields adding secret field on top of that
+    options?: VerifyOptions & {
+        secret?: string;
+    }
+) => {
+    // defaults to JWT_SECRET but using JWT_REFRESH_SECRET in refreshUserAccessToken
+    //...verifyOpts is to extract secret and leave the rest
+    const { secret = JWT_SECRET, ...verifyOpts } = options || {};
+    try {
+        // payload is as follows:
+        // {
+        // sessionId: '6851d233832a7cbb78c1fbea',
+        // iat: 1750192691,
+        // exp: 1752784691,
+        // aud: [ 'user' ]
+        // }
+        const payload = jwt.verify(token, secret, {
+            ...defaults,
+            ...verifyOpts,
+        }) as TPayload;
+        return {
+            payload,
+        };
+    } catch (error: any) {
+        return {
+            error: error.message,
+        };
+    }
 };

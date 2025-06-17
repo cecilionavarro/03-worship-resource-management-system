@@ -5,8 +5,8 @@ const secure = process.env.NODE_ENV !== "development"; // send cookies over http
 
 const defaults: CookieOptions = {
     sameSite: "strict", // prevents cookies from being sent cross-site
-    httpOnly: true,
-    secure,
+    httpOnly: true, // makes cookies inaccessable to JavaScript
+    secure, // conditionally sent based on environment
 };
 
 //cookie with usual rules but add another
@@ -27,6 +27,7 @@ type Params = {
     refreshToken: string;
 };
 
+// res.cookie(name, value, options)
 export const setAuthCookies = ({ res, accessToken, refreshToken }: Params) =>
     res
         .cookie("accessToken", accessToken, getAccessTokenCookieOptions())

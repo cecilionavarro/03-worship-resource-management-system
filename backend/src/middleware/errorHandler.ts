@@ -5,15 +5,15 @@ import AppError from "../utils/AppError";
 
 const handleZodError = (res: Response, error: z.ZodError) => {
     const errors = error.issues.map((err) => ({
+        // transforms ["user", "profile", "email"] to "user.profile.email"
         path: err.path.join("."),
         message: err.message,
     }));
 
     return res.status(BAD_REQUEST).json({
         errors,
-        message: errors[0]?.message || "Invalid request",
-        // previous code
-        // message: error.message,
+        // message: errors[0]?.message || "Invalid request",
+        message: error.message,
     });
 };
 

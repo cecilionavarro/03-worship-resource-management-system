@@ -11,7 +11,7 @@ import { loginSchema, registerSchema } from "./auth.schemas";
 
 export const registerHandler = async (req: Request, res: Response) => {
     // validate request
-    // parse is a Zod method no need to import since it comes from registerSchema export
+    // parse is a Zod method no need to import since it comes from registerSchema export it throws an error if refine fails
     // request is an object with email, password, userAgent, confirmPassword
     const request = registerSchema.parse({
         ...req.body,

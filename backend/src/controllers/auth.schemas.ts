@@ -1,5 +1,6 @@
 // used to be in authRoutes.controller.ts but moved to not clutter
 
+// z is the object that gives access to Zod's schema building tools
 import z from "zod";
 
 const emailSchema = z.string().email().min(1).max(255);
@@ -15,6 +16,7 @@ export const registerSchema = loginSchema
     .extend({
         confirmPassword: z.string().min(6).max(255),
     })
+    // .refine is for custom logic validation
     .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",
         path: ["confirmPassword"],

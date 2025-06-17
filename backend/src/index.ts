@@ -9,8 +9,9 @@ import authRoutes from "./routes/auth.route";
 
 const app = express();
 
-app.use(express.json()); //Parse JSON request bodies
+app.use(express.json()); //Parse JSON request bodies front end or postman
 app.use(express.urlencoded({ extended: true })); // From data allows nested objects and arrays
+
 app.use(
     cors({
         origin: APP_ORIGIN,
@@ -24,7 +25,7 @@ app.get("/", (req, res, next) => {
     });
 });
 
-app.use("/auth", authRoutes)
+app.use("/auth", authRoutes) // use is for middleware
 
 app.use(errorHandler); // middleware will catch errors from the routes above
 

@@ -1,5 +1,9 @@
 import bcrypt from "bcrypt";
 
+// uses bcrypt hashing algorithm
+// bcrypt operations are asyncronous
+// hashValue is an encrypted string
+
 export const hashValue = async (value: string, saltRounds?: number) =>
     bcrypt.hash(value, saltRounds || 10);
 

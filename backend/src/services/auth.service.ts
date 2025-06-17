@@ -1,4 +1,3 @@
-import { JWT_REFRESH_SECRET, JWT_SECRET } from "../constants/env";
 import { CONFLICT, UNAUTHORIZED } from "../constants/http";
 import VerificationCodeType from "../constants/verificationCodeTypes";
 import SessionModel from "../models/session.model";
@@ -6,7 +5,6 @@ import UserModel from "../models/user.model";
 import VerificationCodeModel from "../models/verificationCode.model";
 import appAssert from "../utils/appAssert";
 import { oneYearFromNow } from "../utils/date";
-import jwt from "jsonwebtoken";
 import { refreshTokenSignOptions, signToken } from "../utils/jwt";
 
 export type CreateAccountParams = {
@@ -17,19 +15,25 @@ export type CreateAccountParams = {
 
 export const createAccount = async (data: CreateAccountParams) => {
     // verify existing user doesn't exist
+
+    // exists takes in a key-value pair or multiple fields
+    // returns null if no match or an object id
     const existingUser = await UserModel.exists({
         email: data.email,
     });
+    console.log(existingUser);
 
-    appAssert(!existingUser, CONFLICT, "Email already in user");
+    // if user exists throw an error
+    appAssert(!existingUser, CONFLICT, "Email already in use");
 
     // create user
+    // .create() - Model.create(documents, [callback]) documents can be a single object or an array of objects
     const user = await UserModel.create({
         email: data.email,
         password: data.password,
     });
 
-    const userId = user.id
+    const userId = user.id;
     // create verification code
     const verificationCode = await VerificationCodeModel.create({
         userId: userId,

@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { loginHandler, registerHandler } from "../controllers/auth.controllers";
 
-const authRoutes = Router();
+const authRoutes = Router(); // makes mini express app
 
 // prefix: /auth
+authRoutes.post("/register", registerHandler); //handler is synonymous for controller
+authRoutes.post("/login", loginHandler); //handler is synonymous for controller
 
-authRoutes.post("/register", registerHandler) //handler is synonymous for controller
-authRoutes.post("/login", loginHandler) //handler is synonymous for controller
-
-export default authRoutes
+export default authRoutes;

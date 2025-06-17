@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { thirtyDaysFromNow } from "../utils/date";
 
+// This value will be an ObjectId.
 export interface SessionDocument extends mongoose.Document {
     userId: mongoose.Types.ObjectId; // mongoose id like ex. "665e0c9394f2eafbcd123456"
     userAgent?: string; //device ex ios
@@ -8,6 +9,7 @@ export interface SessionDocument extends mongoose.Document {
     expiresAt: Date;
 }
 
+// This field should be stored as an ObjectId in MongoDB - mongoose.Schema...
 const sessionSchema = new mongoose.Schema<SessionDocument>({
     userId: {
         ref: "User",

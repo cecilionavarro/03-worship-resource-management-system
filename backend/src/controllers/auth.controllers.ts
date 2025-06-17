@@ -8,6 +8,8 @@ import {
     createAccount,
     loginUser,
     refreshUserAccessToken,
+    resetPassword,
+    sendPasswordResetEmail,
     verifyEmail,
 } from "../services/auth.service";
 import { CREATED, OK, UNAUTHORIZED } from "../constants/http";
@@ -18,8 +20,10 @@ import {
     setAuthCookies,
 } from "../utils/cookies";
 import {
+    emailSchema,
     loginSchema,
     registerSchema,
+    resetPasswordSchema,
     verificationCodeSchema,
 } from "./auth.schemas";
 import { verifyToken } from "../utils/jwt";
@@ -97,12 +101,32 @@ export const refreshHandler = async (req: Request, res: Response) => {
 };
 
 export const verifyEmailHandler = async (req: Request, res: Response) => {
-    // req.params.code means :code section of the URL   
+    // req.params.code means :code section of the URL
     const verificationCode = verificationCodeSchema.parse(req.params.code);
 
     await verifyEmail(verificationCode);
 
     res.status(OK).json({
         message: "Email was succesfully verified",
+    });
+};
+
+export const sendPasswordResetHandler = async (req: Request, res: Response) => {
+    const email = emailSchema.parse(req.body.email);
+
+    await sendPasswordResetEmail(email);
+
+    res.status(OK).json({
+        message: "Password reset email sent",
+    });
+};
+
+export const resetPasswordHandler = async (req: Request, res: Response) => {
+    const request = resetPasswordSchema.parse(req.body);
+
+    await resetPassword(request);
+
+    clearAuthCookies(res).status(OK).json({
+        message: "Password reset successful",
     });
 };

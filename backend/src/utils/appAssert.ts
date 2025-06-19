@@ -27,6 +27,7 @@ type AppAssert = (
     message: string,
     appErrorCode?: AppErrorCode
     // if we throw an error it means a user with this email must already exist for asserts condition
+    // If appAssert() does not throw, TypeScript should assume that condition is true from now on
     // if void it'll say user possibly null
 ) => asserts condition;
 

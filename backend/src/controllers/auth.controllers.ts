@@ -65,13 +65,13 @@ export const loginHandler = async (req: Request, res: Response) => {
 
 export const logoutHandler = async (req: Request, res: Response) => {
     const accessToken = req.cookies.accessToken as string | undefined;
+    // access token because it shows we are actively logged in
     const { payload } = verifyToken(accessToken || "");
-
-    console.log(payload);
 
     if (payload) {
         await SessionModel.findByIdAndDelete(payload.sessionId);
     }
+    
     clearAuthCookies(res).status(OK).json({
         message: "Logout successful",
     });
@@ -85,6 +85,7 @@ export const refreshHandler = async (req: Request, res: Response) => {
     const { accessToken, newRefreshToken } =
         await refreshUserAccessToken(refreshToken);
 
+    // if newRefreshToken exist and not null
     if (newRefreshToken) {
         res.cookie(
             "refreshToken",

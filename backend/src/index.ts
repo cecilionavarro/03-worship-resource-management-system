@@ -7,6 +7,8 @@ import errorHandler from "./middleware/errorHandler";
 import { OK } from "./constants/http";
 import authRoutes from "./routes/auth.route";
 import cookieParser from "cookie-parser";
+import authenticate from "./middleware/authenticate";
+import userRoutes from "./routes/user.route";
 
 const app = express();
 
@@ -27,6 +29,7 @@ app.get("/", (req, res, next) => {
 });
 
 app.use("/auth", authRoutes) // use is for middleware
+app.use("/user", authenticate, userRoutes)
 
 app.use(errorHandler); // middleware will catch errors from the routes above
 

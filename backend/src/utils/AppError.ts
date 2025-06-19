@@ -20,6 +20,8 @@ import { HttpStatusCode } from "../constants/http";
     }
 
     module.exports = AppError;
+
+    can later be used by error handler through error.message, error.statusCode, error.errorCode
 */
 
 class AppError extends Error {

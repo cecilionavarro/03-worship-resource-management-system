@@ -10,6 +10,7 @@ import { JWT_REFRESH_SECRET, JWT_SECRET } from "../constants/env";
 
 // define structure of data in
 // get type of _id from sessionDocument interface
+// sessionId: mongoose.Types.ObjectId; basically the same
 export type RefreshTokenPayload = {
     sessionId: SessionDocument["_id"];
 };
@@ -51,14 +52,19 @@ export const signToken = (
     return jwt.sign(payload, secret, { ...defaults, ...signOpts });
 };
 
-// can accept and return any kind of object as a token's payload
-// Defaults to AccessTokenPayload
+/*
+    verifyToken function can accept and return any kind of object as a token's payload
+    If not specified will assume payload looks like AccessTokenPayload
+    TPayload is constrained to object and defaults to AccessTokenPayload
+    extends - constraints in generics. For interfaces its for inheritence and extension
+    Prevents accidentally passing something like a string, number, or boolean.
+    Return type is Tpayload or error
+*/
+
 export const verifyToken = <TPayload extends object = AccessTokenPayload>(
     token: string,
     //VerifyOptions just gives the fields adding secret field on top of that
-    options?: VerifyOptions & {
-        secret?: string;
-    }
+    options?: VerifyOptions & { secret?: string }
 ) => {
     // defaults to JWT_SECRET but using JWT_REFRESH_SECRET in refreshUserAccessToken
     //...verifyOpts is to extract secret and leave the rest
@@ -71,9 +77,14 @@ export const verifyToken = <TPayload extends object = AccessTokenPayload>(
         // exp: 1752784691,
         // aud: [ 'user' ]
         // }
+        // default adds
+        // {
+        //     audience: ["user"] -> aud: [ 'user' ]
+        // }
+        // options enforced by me
         const payload = jwt.verify(token, secret, {
-            ...defaults,
-            ...verifyOpts,
+            ...defaults, // adds { audience: ["user"] }
+            ...verifyOpts, // nothing extra in this case add more fields than just secret for it to add something
         }) as TPayload;
         return {
             payload,

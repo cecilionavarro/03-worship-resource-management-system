@@ -151,6 +151,7 @@ export const loginUser = async ({
 // refreshToken looks like
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....=
 export const refreshUserAccessToken = async (refreshToken: string) => {
+    // I want the verifyToken function to use RefreshTokenPayload as the type for its return value
     const { payload } = verifyToken<RefreshTokenPayload>(refreshToken, {
         // secret: JWT_REFRESH_SECRET - basically saying this
         secret: refreshTokenSignOptions.secret,
@@ -193,6 +194,7 @@ export const refreshUserAccessToken = async (refreshToken: string) => {
         newRefreshToken,
     };
 };
+
 // validCode looks like:
 // {
 //   _id: new ObjectId('6851d221832a7cbb78c1fbe2'),
@@ -207,6 +209,7 @@ export const verifyEmail = async (code: string) => {
     const validCode = await VerificationCodeModel.findOne({
         _id: code,
         type: VerificationCodeType.EmailVerification,
+        //where expiresAt is greater than now
         expiresAt: { $gt: new Date() },
     });
 
@@ -234,6 +237,7 @@ export const verifyEmail = async (code: string) => {
 
 export const sendPasswordResetEmail = async (email: string) => {
     // get the user by email
+    // returns entire document from email
     const user = await UserModel.findOne({ email });
     appAssert(user, NOT_FOUND, "User not found");
 
@@ -241,7 +245,7 @@ export const sendPasswordResetEmail = async (email: string) => {
     const fiveMinAgo = fiveMinutesAgo();
     const count = await VerificationCodeModel.countDocuments({
         userId: user._id,
-        type: VerificationCodeType.EmailVerification,
+        type: VerificationCodeType.PasswordReset,
         createdAt: { $gt: fiveMinAgo },
     });
 
@@ -262,6 +266,17 @@ export const sendPasswordResetEmail = async (email: string) => {
     // send verification email
     const url = `${APP_ORIGIN}/password/reset?code=${verificationCode._id}&exp=${expiresAt.getTime()}`;
 
+    /*
+        data is the email id returned by the ResendAPI
+        spread is easier, could also do this:
+            await sendMail({
+            to: user.email,
+            subject: template.subject,
+            text: template.text,
+            html: template.html,
+        });
+    */
+   
     const { data, error } = await sendMail({
         to: user.email,
         ...getPasswordResetTemplate(url),
@@ -294,6 +309,7 @@ export const resetPassword = async ({
         type: VerificationCodeType.PasswordReset,
         expiresAt: { $gt: new Date() },
     });
+
     appAssert(validCode, NOT_FOUND, "Invalid or expired verification code");
 
     // update the users password
@@ -304,9 +320,9 @@ export const resetPassword = async ({
     appAssert(updatedUser, INTERNAL_SERVER_ERROR, "Failed to reset password");
 
     // delete the verification code
-    await validCode.deleteOne();
+    await validCode.deleteOne();  // validCode is a Mongoose document
 
-    // delete all sessions
+    // delete all sessions logs the user out from all sessions
     await SessionModel.deleteMany({
         userId: updatedUser._id,
     });

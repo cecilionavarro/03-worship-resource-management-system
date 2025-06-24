@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { verifyEmail } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircleIcon, CheckCircle2Icon, Loader } from "lucide-react";
@@ -12,12 +11,12 @@ const VerifyEmail = () => {
     queryFn: () => verifyEmail(code || ""),
   });
   return (
-    <div className="flex flex-col gap-3 min-h-svh w-full items-center justify-center p-6 md:p-10">
+    <div className="flex flex-col gap-6 min-h-svh w-full items-center justify-center p-6 md:p-10">
       {isPending ? (
         <Loader className="mr-2 h-4 w-4 animate-spin" />
       ) : (
         <div className="flex gap-3 items-center">
-          {isSuccess ? <CheckCircle2Icon /> : <AlertCircleIcon />}
+          {isSuccess ? <CheckCircle2Icon className="text-green-400" /> : <AlertCircleIcon className="text-red-400"/>}
           <h1 className="scroll-m-20 text-4xl font-semibold tracking-tight sm:text-3xl xl:text-4xl">
             {isSuccess ? "Email Verified!" : "Invalid Link"}
           </h1>

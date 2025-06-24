@@ -238,60 +238,65 @@ export const verifyEmail = async (code: string) => {
 export const sendPasswordResetEmail = async (email: string) => {
     // get the user by email
     // returns entire document from email
-    const user = await UserModel.findOne({ email });
-    appAssert(user, NOT_FOUND, "User not found");
-
-    // check email rate limit
-    const fiveMinAgo = fiveMinutesAgo();
-    const count = await VerificationCodeModel.countDocuments({
-        userId: user._id,
-        type: VerificationCodeType.PasswordReset,
-        createdAt: { $gt: fiveMinAgo },
-    });
-
-    appAssert(
-        count <= 1,
-        TOO_MANY_REQUESTS,
-        "Too many requests, try again later"
-    );
-
-    // create verification code
-    const expiresAt = oneHourFromNow();
-    const verificationCode = await VerificationCodeModel.create({
-        userId: user._id,
-        type: VerificationCodeType.PasswordReset,
-        expiresAt,
-    });
-
-    // send verification email
-    const url = `${APP_ORIGIN}/password/reset?code=${verificationCode._id}&exp=${expiresAt.getTime()}`;
-
-    /*
-        data is the email id returned by the ResendAPI
-        spread is easier, could also do this:
-            await sendMail({
-            to: user.email,
-            subject: template.subject,
-            text: template.text,
-            html: template.html,
+    try {
+        const user = await UserModel.findOne({ email });
+        appAssert(user, NOT_FOUND, "User not found");
+    
+        // check email rate limit
+        const fiveMinAgo = fiveMinutesAgo();
+        const count = await VerificationCodeModel.countDocuments({
+            userId: user._id,
+            type: VerificationCodeType.PasswordReset,
+            createdAt: { $gt: fiveMinAgo },
         });
-    */
-   
-    const { data, error } = await sendMail({
-        to: user.email,
-        ...getPasswordResetTemplate(url),
-    });
-
-    appAssert(
-        data?.id,
-        INTERNAL_SERVER_ERROR,
-        `${error?.name} - ${error?.message}`
-    );
-    // return success
-    return {
-        url,
-        emailId: data.id,
-    };
+    
+        appAssert(
+            count <= 1,
+            TOO_MANY_REQUESTS,
+            "Too many requests, try again later"
+        );
+    
+        // create verification code
+        const expiresAt = oneHourFromNow();
+        const verificationCode = await VerificationCodeModel.create({
+            userId: user._id,
+            type: VerificationCodeType.PasswordReset,
+            expiresAt,
+        });
+    
+        // send verification email
+        const url = `${APP_ORIGIN}/password/reset?code=${verificationCode._id}&exp=${expiresAt.getTime()}`;
+    
+        /*
+            data is the email id returned by the ResendAPI
+            spread is easier, could also do this:
+                await sendMail({
+                to: user.email,
+                subject: template.subject,
+                text: template.text,
+                html: template.html,
+            });
+        */
+       
+        const { data, error } = await sendMail({
+            to: user.email,
+            ...getPasswordResetTemplate(url),
+        });
+    
+        appAssert(
+            data?.id,
+            INTERNAL_SERVER_ERROR,
+            `${error?.name} - ${error?.message}`
+        );
+        // return success
+        return {
+            url,
+            emailId: data.id,
+        };
+    } catch (error: any) {
+        console.log("SendPasswordResetError:", error.message);
+        return {};
+    }
 };
 
 type ResetPasswordParams = {

@@ -1,27 +1,13 @@
-import { login } from "@/lib/api";
-import { useMutation } from "@tanstack/react-query";
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { RegisterForm } from '@/components/register-form'
 
 const Register = () => {
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  return (
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+          <div className="w-full max-w-sm">
+            <RegisterForm />
+          </div>
+        </div>
+  )
+}
 
-  const {
-    mutate: createAccount,
-    isPending,
-    isError,
-  } = useMutation({
-    mutationFn: login,
-    onSuccess: () => {
-      navigate("/", {
-        replace: true,
-      });
-    },
-  });
-  return <div>Register</div>;
-};
-
-export default Register;
+export default Register

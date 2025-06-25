@@ -16,7 +16,11 @@ const VerifyEmail = () => {
         <Loader className="mr-2 h-4 w-4 animate-spin" />
       ) : (
         <div className="flex gap-3 items-center">
-          {isSuccess ? <CheckCircle2Icon className="text-green-400" /> : <AlertCircleIcon className="text-red-400"/>}
+          {isSuccess ? (
+            <CheckCircle2Icon className="text-green-400" />
+          ) : (
+            <AlertCircleIcon className="text-red-400" />
+          )}
           <h1 className="scroll-m-20 text-4xl font-semibold tracking-tight sm:text-3xl xl:text-4xl">
             {isSuccess ? "Email Verified!" : "Invalid Link"}
           </h1>
@@ -33,7 +37,9 @@ const VerifyEmail = () => {
           </Link>
         </p>
       )}
-      <Button>Back to home</Button>
+      <Button asChild>
+        <Link to={"/"}>Back to home</Link>
+      </Button>
     </div>
   );
 };

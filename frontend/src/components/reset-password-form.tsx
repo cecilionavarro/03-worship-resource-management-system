@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { resetPassword } from "@/lib/api";
-import { Loader } from "lucide-react";
+import { CheckCircle2Icon, Loader } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Link } from "react-router-dom";
 
@@ -41,7 +41,29 @@ export function ResetPasswordForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         {isSuccess ? (
-          "password reset"
+          <>
+            <CardHeader>
+              Password reset
+              <CardDescription>
+                Your password has been reset successfully.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Alert>
+                <CheckCircle2Icon />
+                <AlertTitle>Success!</AlertTitle>
+                <AlertDescription>
+                  Your password has been updated. You can now sign in with your new credentials.
+                </AlertDescription>
+              </Alert>
+              <div className="mt-4 text-center text-sm">
+                Ready to continue?{" "}
+                <Link to="/login" className="underline underline-offset-4">
+                  Log in
+                </Link>
+              </div>
+            </CardContent>
+          </>
         ) : (
           <>
             <CardHeader>

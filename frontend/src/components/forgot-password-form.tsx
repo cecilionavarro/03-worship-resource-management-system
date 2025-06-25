@@ -79,7 +79,7 @@ export function ForgotPasswordForm({
                   <Input
                     id="email"
                     type="email"
-                    placeholder="your@example.com"
+                    placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoFocus
@@ -100,7 +100,7 @@ export function ForgotPasswordForm({
                   {isPending ? "Sending..." : "Reset password"}
                 </Button>
 
-                <p className="text-sm text-center text-muted-foreground pt-2">
+                <p className="text-sm text-center pt-2">
                   Remember your password?{" "}
                   <Link to="/login" className="underline underline-offset-4">
                     Go back to login

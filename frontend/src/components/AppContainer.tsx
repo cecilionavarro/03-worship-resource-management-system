@@ -1,6 +1,7 @@
 import useAuth from "@/hooks/useAuth";
 import { Loader } from "lucide-react";
 import { Navigate, Outlet } from "react-router-dom";
+import UserMenu from "./UserMenu";
 
 const AppContainer = () => {
   const { user, isLoading } = useAuth();

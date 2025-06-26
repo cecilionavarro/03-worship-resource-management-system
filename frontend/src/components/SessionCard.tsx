@@ -1,3 +1,4 @@
+import useDeleteSession from "@/hooks/useDeleteSession";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "./ui/card";
 
@@ -14,6 +15,9 @@ interface Props {
 
 const SessionCard = ({ session }: Props) => {
   const { _id, createdAt, userAgent, isCurrent } = session;
+
+  const { deleteSession, isPending } = useDeleteSession(_id);
+
   return (
     <Card className="flex flex-row">
       <CardHeader className="flex-1 w-full">
@@ -23,7 +27,7 @@ const SessionCard = ({ session }: Props) => {
       </CardHeader>
       <CardContent>
         {!isCurrent ? (
-          <Button variant="ghost">Delete</Button>
+          <Button variant="ghost" onClick={() => deleteSession()}>{isPending ? "Deleting..." : "Delete"}</Button>
         ) : (
           <div className="w-10" /> // or <span className="invisible">Delete</span>
         )}

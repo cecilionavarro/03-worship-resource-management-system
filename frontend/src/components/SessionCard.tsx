@@ -1,13 +1,7 @@
 import useDeleteSession from "@/hooks/useDeleteSession";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "./ui/card";
-
-interface Session {
-  _id: string;
-  createdAt: string;
-  userAgent: string;
-  isCurrent: boolean;
-}
+import type { Session } from "@/lib/api";
 
 interface Props {
   session: Session;

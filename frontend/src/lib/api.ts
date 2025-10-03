@@ -1,35 +1,54 @@
 import API from "@/config/apiClient";
 
+export type User = {
+    _id: string;
+    email: string;
+    verified: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v?: number;
+};
+
+export type Session = {
+    _id: string;
+    userAgent: string;
+    createdAt: string;
+    isCurrent: boolean;
+};
+
 interface LoginData {
-  email: string;
-  password: string;
+    email: string;
+    password: string;
 }
 
 interface RegisterData {
-  email: string;
-  password: string;
-  confirmPassword: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
 }
 
 interface ResetPasswordData {
-  verificationCode: string;
-  password: string;
+    verificationCode: string;
+    password: string;
 }
 
-export const login = async (data: LoginData) => API.post("/auth/login", data);
-export const logout = async () => API.get("/auth/logout");
-export const register = async (data: RegisterData) =>
-  API.post("/auth/register", data);
-export const verifyEmail = async (verificationCode: string) =>
-  API.get(`/auth/email/verify/${verificationCode}`);
-export const sendPasswordResetEmail = async (email: string) =>
-  API.post(`/auth/password/forgot`, { email });
-export const resetPassword = async ({
-  verificationCode,
-  password,
+export const login = (data: LoginData) => API.post("/auth/login", data);
+export const logout = () => API.get("/auth/logout");
+export const register = (data: RegisterData) =>
+    API.post("/auth/register", data);
+export const verifyEmail = (verificationCode: string) =>
+    API.get(`/auth/email/verify/${verificationCode}`);
+export const sendPasswordResetEmail = (email: string) =>
+    API.post(`/auth/password/forgot`, { email });
+export const resetPassword = ({
+    verificationCode,
+    password,
 }: ResetPasswordData) =>
-  API.post(`/auth/password/reset`, { verificationCode, password });
+    API.post(`/auth/password/reset`, { verificationCode, password });
 
-export const getUser = async () => API.get("/user");
-export const getSessions = async () => API.get("/sessions");
-export const deleteSessions = async (id: string) => API.delete(`/sessions/${id}`);
+export const getUser = () => API.get<User, User>("/user");
+
+export const getSessions = () => API.get<Session[], Session[]>("/sessions");
+
+export const deleteSessions = (id: Session["_id"]) =>
+    API.delete(`/sessions/${id}`);

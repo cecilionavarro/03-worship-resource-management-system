@@ -5,6 +5,7 @@ import { AlertCircleIcon } from "lucide-react";
 
 const Profile = () => {
   const { user } = useAuth();
+  if (!user) return null;
   const { email, verified, createdAt } = user;
 
   return (

@@ -1,6 +1,14 @@
 name: alabanza
 
 services:
+  mongo:
+    image: mongo:7.0.12
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - internal
   api:
     build:
       context: ./backend
@@ -10,5 +18,15 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+    networks:
+      - internal
     ports:
       - 4004:4004
+    depends_on:
+      - mongo 
+
+volumes:
+  mongo_data:
+networks:
+  internal: # can be named anything like default or internal or backend
+    driver: bridge

@@ -1,0 +1,12 @@
+{
+	local_certs
+}
+
+localtest.me {
+	encode gzip		# gives compression, not really needed locally
+	reverse_proxy frontend:5173
+}
+
+api.localtest.me {
+	reverse_proxy api:4004
+}

@@ -2,12 +2,12 @@ import { CookieOptions, Response } from "express";
 import { fifteenMinutesFromNow, thirtyDaysFromNow } from "./date";
 
 export const REFRESH_PATH = "/auth/refresh";
-const secure = process.env.NODE_ENV !== "development"; // send cookies over http in dev env
+// const secure = process.env.NODE_ENV !== "development"; // send cookies over http in dev env
 
 const defaults: CookieOptions = {
     sameSite: "strict", // prevents cookies from being sent cross-site
     httpOnly: true, // makes cookies inaccessable to JavaScript
-    secure, // conditionally sent based on environment
+    secure: true // conditionally sent based on environment, was a variable before caddy https, now 
 };
 
 //cookie with usual rules but add another

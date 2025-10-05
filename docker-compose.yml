@@ -20,8 +20,8 @@ services:
       - /app/node_modules
     networks:
       - internal
-    ports:
-      - 4004:4004
+    # ports:
+    #   - 4004:4004
     depends_on:
       - mongo 
   
@@ -36,13 +36,30 @@ services:
       - /app/node_modules
     networks:
       - internal
-    ports:
-      - 5173:5173
+    # ports:
+    #   - 5173:5173
     depends_on:
       - api
+  
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - internal
+    depends_on:
+      - api
+      - frontend
 
 volumes:
   mongo_data:
+  caddy_data:
+  caddy_config:
 networks:
   internal: # can be named anything like default or internal or backend
     driver: bridge

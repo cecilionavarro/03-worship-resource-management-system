@@ -1,12 +1,42 @@
-{
-	local_certs
-}
-
-localtest.me {
+{$DOMAIN_NAME:invalid} {
 	encode gzip		# gives compression, not really needed locally
-	reverse_proxy frontend:5173
+	reverse_proxy frontend:80
 }
 
-api.localtest.me {
-	reverse_proxy api:4004
+www.{$DOMAIN_NAME:invalid} {
+	redir https://{$DOMAIN_NAME:invalid}{uri} permanent
 }
+
+api.{$DOMAIN_NAME:invalid}  {
+	reverse_proxy api:4004
+
+	header {
+		-X-Powered-By
+		-server
+
+		Strict-Transport-Security max-age=31536000;
+
+		X-Content-Type-Options nosniff
+
+		# clickjacking protection
+		X-Frame-Options DENY
+
+		# XSS Protection
+		X-XSS-Protection "1; mode=block"
+	}
+
+	rate_limit {
+		zone api_limit {
+			key {http.request.header.CF-Connecting-IP}
+			events 100
+			window 1m
+		}
+
+		zone burst_limit {
+			key {http.request.header.CF-Connecting-IP}
+			events 20
+			window 1s
+		}
+	}
+}
+

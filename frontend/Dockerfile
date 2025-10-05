@@ -1,4 +1,5 @@
-FROM node:18-bookworm-slim
+# dev stage
+FROM node:18-bookworm-slim AS development
 
 WORKDIR /app
 
@@ -8,4 +9,12 @@ RUN npm ci
 
 COPY . .
 
+ARG VITE_API_URL
+RUN VITE_API_URL=${VITE_API_URL} npm run build
+
 CMD ["npm", "run", "dev", "--", "--host"]
+
+# prod stage
+FROM caddy:2-alpine AS production
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=development /app/dist /srv

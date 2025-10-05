@@ -1,0 +1,20 @@
+# static file server use in production
+# trust any proxy that's on a private network
+# caddy sits behind a reverse proxy
+{
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+# bind to all network interfaces on port 80
+# sets root directory for serving static files
+# compression
+# represents the requested path /about -> /srv/about if not then index.html
+# it enables a static file server
+:80 {
+	root * /srv
+	encode gzip
+	try_files {path} /index.html
+	file_server
+}

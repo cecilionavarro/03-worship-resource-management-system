@@ -1,28 +1,45 @@
 import SessionCard from "@/components/SessionCard";
 import useSessions from "@/hooks/useSessions";
-import { Loader } from "lucide-react";
 
 const Settings = () => {
-  const { sessions, isPending, isSuccess, isError } = useSessions();
+  const { sessions, isPending, isError } = useSessions();
 
   return (
-    <div className="container flex flex-col items-center gap-2 py-8 md:py-16 lg:py-20 xl:gap-4">
-      <h1 className="text-primary leading-tighter max-w-2xl text-4xl font-semibold tracking-tight text-balance lg:leading-[1.1] lg:font-semibold xl:text-5xl xl:tracking-tighter">
-        Sessions
-      </h1>
-      {isPending && <Loader />}
-      {isError && <p>Failed to get sessions.</p>}
-      {isSuccess && (
-        <div className="flex w-full justify-center p-6 md:p-10">
-          <div className="flex flex-col gap-3 w-full max-w-lg">
-          {sessions.map((session) => (
+    <div className="flex justify-center px-10">
+      <div className="container flex flex-col items-center py-10 gap-5">
+        <h1 className="text-primary font-semibold text-4xl text-left w-full xl:text-5xl">Sessions</h1>
+        {isPending ? (
+          <ListSkeleton count={3}/>
+        ) : isError ? (
+          <p className="text-destructive">Failed to get sessions.</p>
+        ) : sessions?.length ? (
+          sessions.map((session) => (
             <SessionCard key={session._id} session={session} />
-          ))}
-          </div>
-        </div>
-      )}
+          ))
+        ) : (
+          <EmptyState />
+        )}
+      </div>
     </div>
   );
 };
 
 export default Settings;
+
+function ListSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="h-25 w-full rounded-xl bg-muted animate-pulse"></div>
+      ))}
+    </>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="rounded-xl border p-6 text-center">
+      <p className="text-sm text-muted-foreground">No sessions yet.</p>
+    </div>
+  );
+}

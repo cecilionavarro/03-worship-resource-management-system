@@ -13,7 +13,7 @@ const SessionCard = ({ session }: Props) => {
   const { deleteSession, isPending } = useDeleteSession(_id);
 
   return (
-    <Card className="flex flex-row">
+    <Card className="flex flex-row w-full">
       <CardHeader className="flex-1 w-full">
         {new Date(createdAt).toLocaleString()}
         {isCurrent && " (Current session)"}

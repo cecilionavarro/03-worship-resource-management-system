@@ -1,22 +1,22 @@
 name: alabanza
 
 services:
-  mongo:
-    image: mongo:7.0.12
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - internal
+  # mongo:
+  #   image: mongo:7.0.12
+  #   volumes:
+  #     - mongo_data:/data/db
+  #   networks:
+  #     - internal
   api:
     build:
       context: ./backend
       target: production
     restart: unless-stopped
-    env_file: ./backend/.env
+    env_file: ./backend/.env.production
     networks:
       - internal
-    depends_on:
-      - mongo 
+    # depends_on:
+    #   - mongo 
   
   frontend:
     build:

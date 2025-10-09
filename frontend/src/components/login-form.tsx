@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "@/lib/api";
 import { Loader } from "lucide-react";
@@ -20,10 +20,12 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const location = useLocation();
   const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const redirectUrl = location.state?.redirectUrl || "/"
 
   const {
     mutate: signIn,
@@ -32,7 +34,7 @@ export function LoginForm({
   } = useMutation({
     mutationFn: login,
     onSuccess: () => {
-      navigate("/", {
+      navigate(redirectUrl, {
         replace: true,
       });
     },
